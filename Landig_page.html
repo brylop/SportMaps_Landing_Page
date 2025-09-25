@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>SportMaps - Ecosistema Deportivo Integral</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
+  <style>
+    :root{
+      --primary:#0B5394;--accent:#22B14C;--highlight:#FF6F3C;--wellness:#8B5CF6;--nutrition:#F59E0B;
+      --text:#333;--bg:#F5F7FA;--card:#fff;--border:#E9ECEF;--sidebar-width:280px
+    }
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",sans-serif;background:var(--bg);color:var(--text)}
+    .app-container{display:flex;min-height:100vh}
+    .sidebar{width:var(--sidebar-width);background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%);color:#fff;padding:1.5rem 1rem;position:fixed;height:100vh;overflow-y:auto;z-index:1000;transition:.3s}
+    .sidebar-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.25)}
+    .sidebar-nav{list-style:none;padding:0;margin:0}
+    .sidebar-nav a{display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;color:#fff;text-decoration:none;border-radius:10px;transition:.2s}
+    .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(255,255,255,.15)}
+    .sidebar-nav a i{width:20px;text-align:center}
+    .main-content{flex:1;margin-left:var(--sidebar-width);padding:2rem;transition:.3s}
+    .hero-section{background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 50%,var(--highlight) 100%);color:#fff;padding:4rem 1rem;border-radius:20px;margin-bottom:2rem;text-align:center}
+    .hero-badge{background:rgba(255,255,255,.2);padding:.45rem 1.25rem;border-radius:999px;font-weight:700;display:inline-block;margin-bottom:1rem}
+    .module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;margin:2rem 0}
+    .module-card{background:var(--card);border-radius:16px;padding:1.5rem;border:2px solid transparent;box-shadow:0 10px 25px rgba(0,0,0,.08);transition:.25s;cursor:pointer}
+    .module-card:hover{transform:translateY(-4px);box-shadow:0 18px 35px rgba(0,0,0,.12)}
+    .module-icon{width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.6rem;margin:0 auto 1rem}
+    .about-section,.panel{background:#fff;border-radius:20px;padding:2rem;margin:2rem 0;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+    .team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;margin-top:1rem}
+    .team-img{width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid var(--accent)}
+    .metric{background:#f1f5ff;border:1px solid #dfe8ff;border-radius:14px;text-align:center;padding:1rem}
+    .btn-primary-custom{background:linear-gradient(135deg,var(--primary),var(--accent));border:none;border-radius:999px;color:#fff;font-weight:800;padding:.75rem 1.6rem}
+    .menu-toggle{display:none}
+    @media (max-width: 992px){
+      .sidebar{transform:translateX(-100%);width:0;padding:0}
+      .sidebar.open{transform:translateX(0);width:var(--sidebar-width);padding:1.5rem 1rem}
+      .main-content{margin-left:0}
+      .menu-toggle{display:flex;position:fixed;top:1rem;left:1rem;z-index:1100;background:var(--primary);color:#fff;border:none;border-radius:10px;width:44px;height:44px;align-items:center;justify-content:center}
+    }
+    .text-small{font-size:.95rem}
+
+    /* ====== FIX: asegura que el modal siempre esté por encima ====== */
+    .modal-backdrop.show { z-index: 200005 !important; }
+    .modal.show            { z-index: 200010 !important; }
+  </style>
+</head>
+<body>
+  <!-- Toggle sidebar móvil -->
+  <button class="menu-toggle d-lg-none" id="menuToggle"><i class="fas fa-bars"></i></button>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-map-location-dot fa-lg"></i><h2 class="h4 mb-0">SportMaps</h2>
+      </div>
+      <ul class="sidebar-nav">
+        <li><a href="#inicio" class="active"><i class="fas fa-home"></i> Inicio</a></li>
+        <li><a href="#ecosistema"><i class="fas fa-globe-americas"></i> Ecosistema</a></li>
+        <li><a href="#escuelas"><i class="fas fa-school"></i> Escuelas</a></li>
+        <li><a href="#tienda"><i class="fas fa-store"></i> Tienda</a></li>
+        <li><a href="#nutricion"><i class="fas fa-pills"></i> Nutrición</a></li>
+        <li><a href="#bienestar"><i class="fas fa-heart-pulse"></i> Bienestar</a></li>
+        <li><a href="#inversion"><i class="fas fa-chart-line"></i> Inversión</a></li>
+        <li><a href="#unete"><i class="fas fa-handshake"></i> Únete</a></li>
+        <li><a href="#acerca"><i class="fas fa-info-circle"></i> Acerca de</a></li>
+      </ul>
+      <div class="mt-4 pt-3 border-top border-white border-opacity-25">
+        <p class="small opacity-75 mb-0">SportMaps © 2025</p>
+        <p class="small opacity-75">Conectando el ecosistema deportivo</p>
+      </div>
+    </aside>
+
+    <!-- Contenido -->
+    <main class="main-content">
+      <!-- Hero -->
+      <section class="hero-section" id="inicio">
+        <div class="container">
+          <span class="hero-badge"><i class="fa-solid fa-rocket me-2"></i>Futuro del Deporte Digital</span>
+          <h1 class="display-5 fw-bold mb-2">SportMaps: Ecosistema Deportivo Integral</h1>
+          <p class="lead mb-4">Conectamos deportistas, escuelas, marcas y profesionales en una plataforma única.</p>
+          <button id="openDemoBtn" class="btn btn-light btn-lg rounded-pill px-4">
+            <i class="fa-solid fa-play me-2"></i> Explorar Demo Interactivo
+          </button>
+        </div>
+      </section>
+
+      <!-- Buscador -->
+      <section class="bg-white p-4 rounded-4 shadow-sm mb-5">
+        <h3 class="text-center mb-3">Encuentra Todo lo que Necesitas</h3>
+        <div class="input-group">
+          <input type="search" class="form-control rounded-pill rounded-end" placeholder="Buscar escuelas, productos, servicios…"/>
+          <button class="btn btn-primary rounded-pill rounded-start" type="button">
+            <i class="fa-solid fa-search me-1"></i>Buscar
+          </button>
+        </div>
+        <div class="d-flex justify-content-center mt-3 flex-wrap gap-2">
+          <span class="badge bg-primary">Fútbol</span>
+          <span class="badge bg-success">Equipamiento</span>
+          <span class="badge bg-warning text-dark">Nutrición</span>
+          <span class="badge bg-info text-dark">Entrenadores</span>
+        </div>
+      </section>
+
+      <!-- Ecosistema -->
+      <section class="panel" id="ecosistema">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+          <h2 class="m-0">Ecosistema Integrado</h2>
+          <span class="badge rounded-pill text-bg-success">MVP → Fase 1: Escuelas</span>
+        </div>
+        <p class="mt-3 text-small">
+          El ecosistema se orquesta sobre <strong>un solo perfil</strong> y <strong>un carrito/checkout unificado</strong>.
+          Módulos: 1) Marketplace de Escuelas/Entrenadores, 2) Tienda (e-commerce), 3) Nutrición & Suscripciones,
+          4) Bienestar/Salud. Un <em>motor de recomendaciones</em> (IA) sugiere clases y productos según edad, nivel y hábitos.
+          La pasarela de pago (Stripe/PSE) y el sistema de reservas comparten cuentas y facturación.
+        </p>
+        <div class="row g-3">
+          <div class="col-6 col-md-3"><div class="metric"><div class="fw-bold fs-4 text-primary">1,247</div><div class="text-muted">Escuelas</div></div></div>
+          <div class="col-6 col-md-3"><div class="metric"><div class="fw-bold fs-4 text-primary">15,892</div><div class="text-muted">Productos</div></div></div>
+          <div class="col-6 col-md-3"><div class="metric"><div class="fw-bold fs-4 text-primary">89,543</div><div class="text-muted">Usuarios</div></div></div>
+          <div class="col-6 col-md-3"><div class="metric"><div class="fw-bold fs-4 text-primary">$2.1M</div><div class="text-muted">GMV Mensual</div></div></div>
+        </div>
+
+        <h5 class="mt-4">Módulos (haz clic para navegar)</h5>
+        <div class="module-grid">
+          <div class="module-card" data-scroll="#escuelas" style="border-color:var(--primary)">
+            <div class="module-icon" style="background:linear-gradient(135deg,var(--primary),var(--accent))"><i class="fa-solid fa-school"></i></div>
+            <h4 class="text-center mb-1">Escuelas & Entrenadores</h4>
+            <p class="text-muted text-center m-0">Búsqueda avanzada, reservas, reseñas verificadas.</p>
+          </div>
+          <div class="module-card" data-scroll="#tienda" style="border-color:var(--highlight)">
+            <div class="module-icon" style="background:linear-gradient(135deg,var(--highlight),#FF8A65)"><i class="fa-solid fa-store"></i></div>
+            <h4 class="text-center mb-1">Tienda</h4>
+            <p class="text-muted text-center m-0">Catálogo especializado, fulfillment 24–48h.</p>
+          </div>
+          <div class="module-card" data-scroll="#nutricion" style="border-color:var(--nutrition)">
+            <div class="module-icon" style="background:linear-gradient(135deg,var(--nutrition),#FCD34D)"><i class="fa-solid fa-pills"></i></div>
+            <h4 class="text-center mb-1">Nutrición</h4>
+            <p class="text-muted text-center m-0">Suscripciones y planes personalizados.</p>
+          </div>
+          <div class="module-card" data-scroll="#bienestar" style="border-color:var(--wellness)">
+            <div class="module-icon" style="background:linear-gradient(135deg,var(--wellness),#A78BFA)"><i class="fa-solid fa-heart-pulse"></i></div>
+            <h4 class="text-center mb-1">Bienestar</h4>
+            <p class="text-muted text-center m-0">Fisioterapia/psicología y teleconsulta.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Escuelas -->
+      <section class="panel" id="escuelas">
+        <h2>Marketplace de Escuelas</h2>
+        <p class="text-small">Implementación: fichas verificadas, agenda por franjas, cobro por reserva (8–15%), wallet para escuelas, y KYC básico. KPIs: tasa de conversión a reserva, ocupación por franja, NPS.</p>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="p-3 border rounded-4 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-magnifying-glass me-2"></i>Búsqueda/Match</h6>
+              <p class="text-muted m-0">Filtro por ciudad/edad/nivel; ranking con reputación, cercanía y precio.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 border rounded-4 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-calendar-check me-2"></i>Reservas & Pagos</h6>
+              <p class="text-muted m-0">Calendario con cupos; pago anticipado; reembolsos y políticas.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 border rounded-4 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-shield-halved me-2"></i>Verificación</h6>
+              <p class="text-muted m-0">Documentos/seguros; control de credenciales y reseñas auditadas.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tienda -->
+      <section class="panel" id="tienda">
+        <h2>Tienda (E-commerce Deportivo)</h2>
+        <p class="text-small">Catálogo curado por deporte; integraciones con proveedores (dropship/stock mixto); promociones basadas en calendario de torneos; checkout compartido con reservas.</p>
+        <div class="row g-3">
+          <div class="col-lg-4">
+            <div class="border rounded-4 p-3 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-box-open me-2 text-primary"></i>Catálogo</h6>
+              <p class="text-muted m-0">Ropa, equipamiento, accesorios. Variantes por talla/edad. Bundles por disciplina.</p>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="border rounded-4 p-3 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-truck-fast me-2 text-primary"></i>Fulfillment</h6>
+              <p class="text-muted m-0">SLA 24–48h, seguimiento, devoluciones 30 días. Facturación unificada.</p>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="border rounded-4 p-3 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-robot me-2 text-primary"></i>Recomendaciones</h6>
+              <p class="text-muted m-0">IA sugiere tallas y kits según edad, deporte y reservas recientes.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Nutrición -->
+      <section class="panel" id="nutricion">
+        <h2>Nutrición & Suplementos</h2>
+        <p class="text-small">Tienda especializada con suscripción mensual (“Plan Base”, “Rendimiento”, “Recuperación”). Registro sanitario verificado y contenido educativo por edad y disciplina.</p>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 border rounded-4 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-repeat me-2 text-warning"></i>Suscripciones</h6>
+              <p class="text-muted m-0">Entrega automática cada 30 días; pausar/cambiar en 1 clic; descuentos por fidelidad.</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 border rounded-4 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-user-doctor me-2 text-warning"></i>Asesoría</h6>
+              <p class="text-muted m-0">Chat con nutricionistas, planes personalizados y contraindicaciones visibles.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bienestar -->
+      <section class="panel" id="bienestar">
+        <h2>Bienestar & Salud</h2>
+        <p class="text-small">Módulo de servicios profesionales: fisioterapia, psicología deportiva y entrenamiento online. Teleconsulta segura, historial y recomendaciones post-sesión.</p>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="p-3 border rounded-4 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-video me-2 text-purple"></i>Teleconsulta</h6>
+              <p class="text-muted m-0">Video/WebRTC, notas clínicas básicas, seguimiento y ejercicios guiados.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 border rounded-4 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-heart me-2 text-purple"></i>Integraciones</h6>
+              <p class="text-muted m-0">Wearables (pasos, sueño, FC) para planes y alertas personalizadas.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 border rounded-4 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-lock me-2 text-purple"></i>Privacidad</h6>
+              <p class="text-muted m-0">Seguridad y consentimiento explícito; datos sensibles cifrados.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Inversión -->
+      
+
+      <!-- Únete -->
+      <section class="panel" id="unete">
+        <h2>Únete al Ecosistema</h2>
+        <div class="row g-3">
+          <div class="col-lg-4">
+            <div class="p-3 border rounded-4 h-100">
+    <h6 class="mb-1"><i class="fa-solid fa-handshake-angle me-2 text-success"></i>Servicios para Escuelas Deportivas</h6>
+    <p class="text-muted m-0">Plataforma de gestión completa para automatizar reservas, pagos, membresías y comunicación con estudiantes.</p>
+</div>
+          </div>
+          <div class="col-lg-4">
+            <div class="p-3 border rounded-4 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-school-flag me-2 text-success"></i>Escuelas/Aliados</h6>
+              <p class="text-muted m-0">Onboarding en 48h, herramientas de agenda/cobros y visibilidad preferente.</p>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="p-3 border rounded-4 h-100">
+              <h6 class="mb-1"><i class="fa-solid fa-bullhorn me-2 text-success"></i>Marcas</h6>
+              <p class="text-muted m-0">Catálogo con data de intención, activaciones y bundles por deporte/edad.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Acerca -->
+      <section class="about-section" id="acerca">
+        <div class="row align-items-center">
+          <div class="col-lg-6">
+            <h2 class="fw-bold mb-3">Nuestra Misión</h2>
+            <p class="lead">Hacer el deporte más accesible y seguro, conectando formación, equipamiento y salud en un solo lugar.</p>
+            <p class="mb-0 text-small">Atendemos a familias, jóvenes deportistas y aficionados. Para proveedores, ofrecemos un canal digital con herramientas de gestión y acceso a una audiencia calificada.</p>
+          </div>
+          <div class="col-lg-6 text-center">
+            <img class="img-fluid rounded-4" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1170&auto=format&fit=crop" alt="Equipo SportMaps">
+          </div>
+        </div>
+
+
+  <!-- MODAL DEMO -->
+  <div class="modal fade" id="demoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content bg-dark">
+        <div class="modal-header border-0">
+          <h5 class="modal-title text-white"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>Demo Interactivo</h5>
+          <div class="d-flex align-items-center gap-2">
+            <button id="openInTab" type="button" class="btn btn-sm btn-light">
+              <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>Abrir en pestaña
+            </button>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+        </div>
+        <div class="modal-body p-0">
+          <iframe id="demoFrame" title="SportMaps Demo" style="border:0;width:100%;height:100%;display:block;"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /* ================== DEMO COMPLETA (tu versión Tailwind) ================== */
+    const DEMO_HTML = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SportMaps - Ecosistema Deportivo Integral (Demo Completa)</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&family=Lexend:wght@400;500;700&family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"><\/script>
+  <style type="text/tailwindcss">
+    :root {
+      --brand-primary: #38e07b;
+      --brand-primary-dark: #2fbc68;
+      --brand-secondary: #264532;
+      --brand-background-dark: #122118;
+      --brand-background-light: #f8fbfa;
+      --brand-text-dark-primary: #FFFFFF;
+      --brand-text-dark-secondary: #96c5a9;
+      --brand-text-light-primary: #0e1a13;
+      --brand-text-light-secondary: #51946c;
+    }
+    .role-card { @apply flex items-center gap-4 bg-white p-4 rounded-xl border border-gray-200 cursor-pointer transition-all duration-300 hover:border-[var(--brand-primary)] hover:shadow-lg; }
+    .role-card.selected { @apply border-[var(--brand-primary)] bg-emerald-50 ring-2 ring-[var(--brand-primary)]; }
+    .form-input:focus + .form-label,
+    .form-input:not(:placeholder-shown) + .form-label { transform: translateY(-1.1rem) scale(0.8); color: var(--brand-primary); }
+    .mobile-menu { transform: translateX(-100%); transition: transform .3s ease-in-out; }
+    .mobile-menu.open { transform: translateX(0); }
+    .nav-button { cursor: pointer; }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+  <svg width="0" height="0" style="display:none;">
+    <symbol id="sportmaps-logo-desktop" viewBox="0 0 48 48">
+      <path clip-rule="evenodd" d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z" fill="currentColor" fill-rule="evenodd"></path>
+    </symbol>
+  </svg>
+
+  <!-- Menú móvil -->
+  <div id="mobile-menu" class="mobile-menu fixed inset-0 bg-white z-50 p-6 md:hidden">
+    <div class="flex justify-between items-center mb-8">
+      <div class="flex items-center gap-3 text-2xl font-bold text-[var(--brand-text-light-primary)]">
+        <svg class="h-8 w-8 text-[var(--brand-primary)]"><use xlink:href="#sportmaps-logo-desktop"></use></svg>
+        <h1 class="tracking-tight">SportMaps</h1>
+      </div>
+      <button id="close-menu" class="p-2"><span class="material-symbols-outlined text-3xl">close</span></button>
+    </div>
+    <nav class="flex flex-col gap-6">
+      <a class="nav-button text-lg font-medium" data-target="landing-page-pro">Inicio</a>
+      <a class="nav-button text-lg font-medium" data-target="ecosystem-overview">Ecosistema</a>
+      <a class="nav-button text-lg font-medium" data-target="advanced-search-screen-dark">Explorar</a>
+      <a class="nav-button text-lg font-medium" data-target="about-us-pro">Nuestra Historia</a>
+      <a class="nav-button text-lg font-medium" data-target="contact-pro">Contacto</a>
+      <div class="flex flex-col gap-4 mt-8">
+        <button class="nav-button rounded-lg h-12 px-4 bg-[var(--brand-primary)] text-black font-bold" data-target="role-selection-screen">Registrarse</button>
+        <button class="nav-button rounded-lg h-12 px-4 bg-gray-200 text-gray-800 font-bold" data-target="login-screen">Iniciar sesión</button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Landing -->
+  <section id="landing-page-pro">
+    <div class="relative flex min-h-screen flex-col bg-[var(--brand-background-light)]" style='font-family: Lexend, sans-serif;'>
+      <header class="flex items-center justify-between border-b px-6 md:px-10 py-4">
+        <div class="flex items-center gap-6 md:gap-10">
+          <div class="flex items-center gap-3 text-xl md:text-2xl font-bold text-[var(--brand-text-light-primary)]">
+            <svg class="h-7 w-7 md:h-8 md:w-8 text-[var(--brand-primary)]"><use xlink:href="#sportmaps-logo-desktop"></use></svg>
+            <h1 class="tracking-tight">SportMaps</h1>
+          </div>
+          <nav class="hidden md:flex items-center gap-6 md:gap-8">
+            <a class="nav-button hover:text-[var(--brand-primary)]" data-target="landing-page-pro">Inicio</a>
+            <a class="nav-button hover:text-[var(--brand-primary)]" data-target="ecosystem-overview">Ecosistema</a>
+            <a class="nav-button hover:text-[var(--brand-primary)]" data-target="advanced-search-screen-dark">Explorar</a>
+            <a class="nav-button hover:text-[var(--brand-primary)]" data-target="about-us-pro">Nuestra Historia</a>
+            <a class="nav-button hover:text-[var(--brand-primary)]" data-target="contact-pro">Contacto</a>
+          </nav>
+        </div>
+        <div class="flex flex-1 justify-end items-center gap-2 md:gap-4">
+          <button class="hidden md:flex nav-button items-center justify-center rounded-lg h-10 px-4 bg-[var(--brand-primary)] text-black text-sm font-bold" data-target="role-selection-screen">Registrarse</button>
+          <button class="hidden md:flex nav-button items-center justify-center rounded-lg h-10 px-4 bg-gray-200 text-gray-800 text-sm font-bold" data-target="login-screen">Iniciar sesión</button>
+          <button id="open-menu" class="md:hidden p-2"><span class="material-symbols-outlined text-3xl">menu</span></button>
+        </div>
+      </header>
+      <main class="flex-1 px-6 md:px-10 xl:px-40 py-8 md:py-12">
+        <div class="mx-auto max-w-5xl text-center">
+          <h2 class="text-3xl md:text-5xl font-bold mb-6 md:mb-8">El Ecosistema Deportivo de Colombia, en un solo lugar.</h2>
+          <p class="text-lg md:text-xl mb-6 md:mb-8 text-[var(--brand-text-light-secondary)]">Conectamos atletas, padres, entrenadores y escuelas para potenciar el talento y facilitar el acceso al deporte.</p>
+          <div class="flex flex-col md:flex-row gap-4 justify-center">
+            <button class="nav-button rounded-lg bg-[var(--brand-primary)] px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-semibold text-black" data-target="advanced-search-screen-dark">Explorar Ahora</button>
+            <button class="nav-button rounded-lg border border-[var(--brand-primary)] px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-semibold text-[var(--brand-primary)]" data-target="ecosystem-overview">Ver Ecosistema</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <!-- Secciones mínimas para navegación -->
+  <section id="login-screen" class="hidden"></section>
+  <section id="role-selection-screen" class="hidden"></section>
+  <section id="ecosystem-overview" class="hidden"></section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('section');
+      const navButtons = document.querySelectorAll('.nav-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const openMenuBtn = document.getElementById('open-menu');
+      const closeMenuBtn = document.getElementById('close-menu');
+
+      const showScreen = (screenId) => {
+        sections.forEach(section => section.classList.toggle('hidden', section.id !== screenId));
+        window.scrollTo(0,0);
+        if (mobileMenu && mobileMenu.classList.contains('open')) mobileMenu.classList.remove('open');
+      };
+
+      navButtons.forEach(btn => btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const t = btn.dataset.target;
+        if (t) showScreen(t);
+      }));
+
+      if (openMenuBtn) openMenuBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
+      if (closeMenuBtn) closeMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
+      document.addEventListener('click', (e) => {
+        if (mobileMenu && mobileMenu.classList.contains('open') && !mobileMenu.contains(e.target) && e.target !== openMenuBtn){
+          mobileMenu.classList.remove('open');
+        }
+      });
+    });
+  <\/script>
+</body>
+</html>
+    `;
+
+    /* ================== Sidebar móvil ================== */
+    document.getElementById('menuToggle').addEventListener('click',()=> {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    /* ================== Navegación sidebar (activo + scroll suave) ================== */
+    document.querySelectorAll('.sidebar-nav a').forEach(link=>{
+      link.addEventListener('click',e=>{
+        e.preventDefault();
+        document.querySelectorAll('.sidebar-nav a').forEach(i=>i.classList.remove('active'));
+        link.classList.add('active');
+        const id = link.getAttribute('href');
+        const el = document.querySelector(id);
+        if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+        if(window.innerWidth<992){document.getElementById('sidebar').classList.remove('open');}
+      });
+    });
+
+    /* ================== Cards del ecosistema: scroll a sección ================== */
+    document.querySelectorAll('.module-card[data-scroll]').forEach(card=>{
+      card.addEventListener('click',()=> {
+        const target = card.getAttribute('data-scroll');
+        const el = document.querySelector(target);
+        if(el) el.scrollIntoView({behavior:'smooth'});
+      });
+    });
+
+    /* ================== Modal & Demo con Blob URL ================== */
+    const modalEl = document.getElementById('demoModal');
+    const frameEl = document.getElementById('demoFrame');
+    const openBtn  = document.getElementById('openDemoBtn');
+    const openTab  = document.getElementById('openInTab');
+
+    // Asegurar que el modal esté pegado al body (evita stacking contexts raros)
+    if (modalEl.parentElement !== document.body) {
+      document.body.appendChild(modalEl);
+    }
+
+    const demoModal = new bootstrap.Modal(modalEl, { backdrop:true, keyboard:true, focus:true });
+
+    let blobUrl = null;
+    function ensureBlobUrl(){
+      if(blobUrl) return blobUrl;
+      blobUrl = URL.createObjectURL(new Blob([DEMO_HTML],{type:'text/html'}));
+      return blobUrl;
+    }
+    function loadDemo(){ frameEl.removeAttribute('srcdoc'); frameEl.src = ensureBlobUrl(); }
+
+    openBtn.addEventListener('click',()=>{
+      loadDemo();
+      demoModal.show(); // ahora sí aparece por encima
+    });
+
+    openTab.addEventListener('click',()=>{ window.open(ensureBlobUrl(), '_blank', 'noopener'); });
+
+    modalEl.addEventListener('hidden.bs.modal',()=>{
+      frameEl.removeAttribute('src');
+      if(blobUrl){ URL.revokeObjectURL(blobUrl); blobUrl=null; }
+    });
+  </script>
+</body>
+</html>
